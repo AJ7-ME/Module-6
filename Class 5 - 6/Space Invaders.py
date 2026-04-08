@@ -3,8 +3,8 @@ import random
 import pygame
 
 # Game Constants
-SCREEN_WIDTH = 1350
-SCREEN_HEIGHT = 680
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 500
 PLAYER_START_X = 370
 PLAYER_START_Y = 380
 ENEMY_START_Y_MIN = 50
@@ -19,17 +19,16 @@ pygame.init()
 
 # Set up the game window
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
 #Background
-background = pygame.image.load('space_bg.png')
+background = pygame.image.load('./Images for pygame/space_bg.png')
 
 # Title and Icon
-pygame.display.set_caption('Space Invaders')
-icon = pygame.image.load('ufo.png')
+pygame.display.set_caption('./Images for pygame/Space Invaders')
+icon = pygame.image.load('./Images for pygame/ufo.png')
 pygame.display.set_icon(icon)
 
 # Player
-playerImg = pygame.image.load('player.png')
+playerImg = pygame.image.load('./Images for pygame/player.png')
 playerX = PLAYER_START_X
 playerY = PLAYER_START_Y
 playerX_change = 0
@@ -43,14 +42,14 @@ enemyY_change = []
 num_of_enemies = 6
 
 for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('enemy.png'))
+    enemyImg.append(pygame.image.load('./Images for pygame/enemy.png'))
     enemyX.append(random.randint(0, SCREEN_WIDTH - 64)) #64 is enemy size
     enemyY.append(random.randint(ENEMY_START_Y_MIN, ENEMY_START_Y_MAX))
     enemyX_change.append(ENEMY_SPEED_X)
     enemyY_change.append(ENEMY_SPEED_Y)
 
 # Bullet
-bulletImg = pygame.image.load('bullet.png')
+bulletImg = pygame.image.load('./Images for pygame/bullet.png')
 bulletX = 0
 bulletY = PLAYER_START_Y
 bulletX_change = 0
@@ -90,11 +89,54 @@ def fire_bullet(x, y):
 def isCollision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt((enemyX - bulletX) ** 2 + (enemyY - bulletY) ** 2)
     return distance < COLLISION_DISTANCE
-
 # Game Loop
-    
+running = True
+while running:
+    screen.fill((0, 0, 0))
+    screen.blit(background, (0, 0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                playerX_change = -5
+            if event.key == pygame.K_RIGHT:
+                playerX_change = 5
+            if event.key == pygame.K_SPACE and bullet_state == "ready":
+                bulletX = playerX
+                fire_bullet(bulletX, bulletY)
+            if event.type == pygame.KEYUP and event.key in [pygame.K_left, pygame.K_RIGHT]:
+                playerX_change = 0
+    # Player Movement
+    playerX += playerX_change
+    playerX = max(0, min(playerX, SCREEN_WIDTH - 64))
 
-
-
-
-
+    # Enemy Movement
+    for i in range(num_of_enemies):
+        if enemyY[i] > 340:
+            for j in range(num_of_enemies):
+                enemyY[j] = 2000
+            game_over_text()
+            break
+        enemyX[i] += enemyX_change[i]
+        if enemyX[i] <= 0 or enemyX[i] >= SCREEN_WIDTH - 64:
+            enemyX_change[i] *= -1
+            enemyY[i] += enemyY_change[i]
+        #Collision Check
+        if isCollision(enemyX[i], enemyY[i], bulletX, bulletY):
+            bulletY = PLAYER_START_Y
+            bullet_state = "ready"
+            score_value += 1
+            enemyX[i] = random.randint(0, SCREEN_WIDTH - 64)
+            enemyY[i] = random.randint(ENEMY_START_Y_MIN, ENEMY_START_Y_MAX)
+        enemy(enemyX[i], enemyY[i], i)
+    # Bullet Movement
+    if bulletY <= 0:
+        bulletY = PLAYER_START_Y
+        bullet_state = "ready"
+    elif bullet_state == "fire":
+        fire_bullet(bulletX, bulletY)
+        bulletY -= bulletY_change
+    player(playerX, playerY)
+    show_score(textX, textY)
+    pygame.display.update()
