@@ -20,15 +20,15 @@ pygame.init()
 # Set up the game window
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 #Background
-background = pygame.image.load('./Images for pygame/space_bg.png')
+background = pygame.image.load('./space_bg.png')
 
 # Title and Icon
-pygame.display.set_caption('./Images for pygame/Space Invaders')
-icon = pygame.image.load('./Images for pygame/ufo.png')
+pygame.display.set_caption('./Space Invaders')
+icon = pygame.image.load('./ufo.png')
 pygame.display.set_icon(icon)
 
 # Player
-playerImg = pygame.image.load('./Images for pygame/player.png')
+playerImg = pygame.image.load('./player.png')
 playerX = PLAYER_START_X
 playerY = PLAYER_START_Y
 playerX_change = 0
@@ -42,14 +42,14 @@ enemyY_change = []
 num_of_enemies = 6
 
 for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('./Images for pygame/enemy.png'))
+    enemyImg.append(pygame.image.load('./enemy.png'))
     enemyX.append(random.randint(0, SCREEN_WIDTH - 64)) #64 is enemy size
     enemyY.append(random.randint(ENEMY_START_Y_MIN, ENEMY_START_Y_MAX))
     enemyX_change.append(ENEMY_SPEED_X)
     enemyY_change.append(ENEMY_SPEED_Y)
 
 # Bullet
-bulletImg = pygame.image.load('./Images for pygame/bullet.png')
+bulletImg = pygame.image.load('./bullet.png')
 bulletX = 0
 bulletY = PLAYER_START_Y
 bulletX_change = 0
